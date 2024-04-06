@@ -1,32 +1,23 @@
 #include "mbed.h"
 #include "LSM6DSLSensor.h"
-#include <math.h>
 
 #define PI 3.141592654
 
 static DevI2C devI2c(PB_11, PB_10);
 static LSM6DSLSensor acc_gyro(&devI2c, 0xD4, D4, D5); // high address
 
+// Function to compute the angle in degrees
 float computeAngle(int x, int y, int z) {
-    if (y == 0 && z == 0) {
-        if (x >= 0) {
-            return 90.0;
-        } else {
-            return -90.0;
-        }
-    }
-
-    float angle = atan(x / sqrt(y * y + z * z)) * 180.0 / PI;
-    return angle;
+    return atan(static_cast<float>(x) / sqrt(y * y + z * z)) * 180.0 / PI;
 }
 
-/* Simple main function */
 int main() {
     uint8_t id;
     int32_t axes[3];
-    float res = 0;
-    acc_gyro.init(NULL);
+    float angle;
 
+    // Initialize accelerometer
+    acc_gyro.init(NULL);
     acc_gyro.enable_x();
     acc_gyro.enable_g();
 
@@ -35,10 +26,16 @@ int main() {
     printf("LSM6DSL accelerometer & gyroscope = 0x%X\r\n", id);
 
     while (1) {
+        // Read accelerometer data
         acc_gyro.get_x_axes(axes);
-        res = computeAngle(axes[0], axes[1], axes[2]);
-        printf("LSM6DSL: %6d, %6d, %6d, %3.2f\r\n", axes[0], axes[1], axes[2], res);
+        
+        // Compute angle
+        angle = computeAngle(axes[0], axes[1], axes[2]);
+        
+        // Print accelerometer data and angle
+        printf("LSM6DSL: %6ld, %6ld, %6ld, %3.2f degrees\r\n", axes[0], axes[1], axes[2], angle);
 
+        // Wait for 2 seconds
         ThisThread::sleep_for(2000ms);
     }
 }
