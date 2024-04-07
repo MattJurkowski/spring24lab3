@@ -33,7 +33,7 @@ int main() {
         angle = computeAngle(axes[0], axes[1], axes[2]);
         
         // Print accelerometer data and angle
-        printf("LSM6DSL: %6ld, %6ld, %6ld, %3.2f degrees\r\n", axes[0], axes[1], axes[2], angle);
+        printf("LSM6DSL: %6d, %6d, %6d, %3.2f degrees\r\n", axes[0], axes[1], axes[2], angle);
 
         // Wait for 2 seconds
         ThisThread::sleep_for(2000ms);
